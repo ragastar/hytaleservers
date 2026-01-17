@@ -1,0 +1,475 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Check, X, ArrowLeft, Loader2, ExternalLink, MessageCircle, Users, ThumbsUp, Clock, Globe } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+
+interface Server {
+  id: string;
+  name: string;
+  slug: string;
+  ip: string;
+  port: number;
+  short_description: string;
+  full_description: string;
+  logo_url: string;
+  banner_url: string;
+  website_url: string;
+  discord_url: string;
+  owner_email: string;
+  status: string;
+  categories: Array<{ name: string; slug: string }>;
+  created_at: string;
+}
+
+export default function AdminServerPage({ params }: { params: Promise<{ id: string }> }) {
+  const router = useRouter();
+  const [server, setServer] = useState<Server | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [editMode, setEditMode] = useState(false);
+  const [editedData, setEditedData] = useState<Partial<Server>>({});
+
+  useEffect(() => {
+    const fetchServer = async () => {
+      try {
+        const { id } = await params;
+        const response = await fetch(`/api/admin-moderation/${id}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to fetch server');
+        }
+
+        setServer(data.server);
+        setEditedData(data.server);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load server');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServer();
+  }, [params]);
+
+  const handleUpdateStatus = async (newStatus: string) => {
+    setUpdating(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      const response = await fetch(`/api/admin-moderation/${server!.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to update status');
+      }
+
+      setSuccess(`Статус сервера обновлен на: ${newStatus}`);
+      setServer(prev => prev ? { ...prev, status: newStatus } : null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update status');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleSaveEdit = async () => {
+    setUpdating(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      const response = await fetch(`/api/admin-moderation/${server!.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(editedData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to update server');
+      }
+
+      setSuccess('Сервер успешно обновлен');
+      setEditMode(false);
+      setServer(prev => prev ? { ...prev, ...editedData } : null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update server');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'approved':
+        return (
+          <Badge variant="default" className="bg-green-500 hover:bg-green-600">
+            <CheckCircle className="mr-1 h-3 w-3" />
+            Одобрен
+          </Badge>
+        );
+      case 'rejected':
+        return (
+          <Badge variant="destructive">
+            <XCircle className="mr-1 h-3 w-3" />
+            Отклонен
+          </Badge>
+        );
+      case 'pending':
+        return (
+          <Badge variant="secondary" className="bg-yellow-500 hover:bg-yellow-600 text-white">
+            <Clock className="mr-1 h-3 w-3" />
+            Модерация
+          </Badge>
+        );
+      case 'offline':
+        return (
+          <Badge variant="outline">
+            <Server className="mr-1 h-3 w-3" />
+            Оффлайн
+          </Badge>
+        );
+      default:
+        return <Badge variant="outline">{status}</Badge>;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-cyan-50 to-amber-50 dark:from-black dark:via-zinc-900 dark:to-black">
+      <div className="container mx-auto px-6 py-8">
+        <div className="mb-6">
+          <Button
+            onClick={() => router.back()}
+            variant="ghost"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Назад
+          </Button>
+        </div>
+
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
+          </div>
+        ) : error ? (
+          <Alert variant="destructive" className="mb-6">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        ) : success ? (
+          <Alert className="mb-6">
+            <AlertDescription className="text-green-700 dark:text-green-700">{success}</AlertDescription>
+          </Alert>
+        ) : !server ? (
+          <div className="flex items-center justify-center py-12">
+            <Server className="mb-4 h-12 w-12 text-zinc-400" />
+            <p className="text-zinc-600 dark:text-zinc-400">
+              Сервер не найден
+            </p>
+          </div>
+        ) : (
+          <div className="grid gap-6 lg:grid-cols-3">
+            <div className="lg:col-span-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="mb-3 text-2xl">{server!.name}</CardTitle>
+                  <CardDescription className="text-sm">
+                    {getStatusBadge(server!.status)}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label>Название</Label>
+                    <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                      {server!.name}
+                    </p>
+                  </div>
+
+                  <div>
+                    <Label>IP адрес</Label>
+                    <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                      {server!.ip}:{server!.port}
+                    </p>
+                  </div>
+
+                  <div>
+                    <Label>Email владельца</Label>
+                    <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                      {server!.owner_email}
+                    </p>
+                  </div>
+
+                  <div>
+                    <Label>Статус</Label>
+                    <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                      {getStatusBadge(server!.status)}
+                    </p>
+                  </div>
+                  <div>
+                    <Label>Категории</Label>
+                    <div className="flex flex flex-wrap gap-2">
+                      {server!.categories?.map((cat: any) => (
+                        <Badge key={cat.id} variant="outline">
+                          {cat.icon} {cat.name}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Действия</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <Button
+                      onClick={handleUpdateStatus.bind(null, 'approved')}
+                      disabled={updating || server!.status === 'approved'}
+                      className="w-full bg-green-500 hover:bg-green-600"
+                    >
+                      <Check className="mr-2 h-4 w-3" />
+                      Одобрить
+                    </Button>
+
+                    <Button
+                      onClick={handleUpdateStatus.bind(null, 'rejected')}
+                      disabled={updating || server!.status === 'rejected'}
+                      variant="destructive"
+                    >
+                      <X className="mr-2 h-4 w-3" />
+                      Отклонить
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            <div className="lg:col-span-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Информация</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Button
+                      onClick={() => setEditMode(!editMode)}
+                      disabled={updating}
+                      variant="outline"
+                    >
+                      {editMode ? 'Отменить редактирование' : 'Редактировать'}
+                    </Button>
+                  </div>
+
+                  {editMode && (
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="name">Название</Label>
+                        <Input
+                          id="name"
+                          value={editedData.name || ''}
+                          onChange={(e) => setEditedData({ ...editedData, name: e.target.value })}
+                          disabled={updating}
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="ip">IP адрес</Label>
+                        <Input
+                          id="ip"
+                          value={editedData.ip || ''}
+                          onChange={(e) => setEditedData({ ...editedData, ip: e.target.value })}
+                          disabled={updating}
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="port">Порт</Label>
+                        <Input
+                          id="port"
+                          type="number"
+                          value={editedData.port || 25565}
+                          onChange={(e) => setEditedData({ ...editedData, port: parseInt(e.target.value) })}
+                          disabled={updating}
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="short_description">Краткое описание</Label>
+                        <Textarea
+                          id="short_description"
+                          value={editedData.short_description || ''}
+                          onChange={(e) => setEditedData({ ...editedData, short_description: e.target.value })}
+                          disabled={updating}
+                          rows={3}
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="full_description">Полное описание</Label>
+                        <Textarea
+                          id="full_description"
+                          value={editedData.full_description || ''}
+                          onChange={(e) => setEditedData({ ...editedData, full_description: e.target.value })}
+                          disabled={updating}
+                          rows={6}
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="website_url">Сайт сервера</Label>
+                        <Input
+                          id="website_url"
+                          placeholder="https://example.com"
+                          value={editedData.website_url || ''}
+                          onChange={(e) => setEditedData({ ...editedData, website_url: e.target.value })}
+                          disabled={updating}
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="discord_url">Discord</Label>
+                        <Input
+                          id="discord_url"
+                          placeholder="https://discord.gg/..."
+                          value={editedData.discord_url || ''}
+                          onChange={(e) => setEditedData({ ...editedData, discord_url: e.target.value })}
+                          disabled={updating}
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="owner_email">Email владельца</Label>
+                        <Input
+                          id="owner_email"
+                          type="email"
+                          placeholder="owner@example.com"
+                          value={editedData.owner_email || ''}
+                          onChange={(e) => setEditedData({ ...editedData, owner_email: e.target.value })}
+                          disabled={updating}
+                        />
+                      </div>
+
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={handleSaveEdit}
+                          disabled={updating}
+                        >
+                          Сохранить
+                        </Button>
+
+                        <Button
+                          onClick={() => setEditMode(false)}
+                          variant="outline"
+                          disabled={updating}
+                        >
+                          Отменить
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                    <div>
+                      <Button
+                        onClick={handleUpdateStatus.bind(null, 'pending')}
+                        disabled={updating || server!.status === 'pending'}
+                        variant="outline"
+                        className="w-full"
+                      >
+                        <Clock className="mr-2 h-4 w-3" />
+                        На модерацию
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Подключение</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {server!.website_url && (
+                      <Button variant="outline" asChild className="w-full">
+                        <a href={server!.website_url} target="_blank" rel="noopener noreferrer">
+                          <Globe className="mr-2 h-4 w-3" />
+                          Сайт сервера
+                        </a>
+                      </Button>
+                    )}
+
+                    {server!.discord_url && (
+                      <Button variant="outline" asChild className="w-full">
+                        <a href={server!.discord_url} target="_blank" rel="noopener noreferrer">
+                          <MessageCircle className="mr-2 h-4 w-3" />
+                          Discord
+                        </a>
+                      </Button>
+                    )}
+
+                    <Link href={`/server-list/${server!.slug}`}>
+                      <Button variant="outline" className="w-full">
+                        <ExternalLink className="mr-2 h-4 w-3" />
+                        Страница сервера
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Статистика</CardTitle>
+                  </CardHeader>
+                   <CardContent className="space-y-4">
+                    <div>
+                      <Label>Рейтинг</Label>
+                      <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                        ⭐ {server!.rating || 0}/5.0
+                      </p>
+                    </div>
+
+                    <div>
+                      <Label>Голоса</Label>
+                      <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                        {server!.total_votes} голосов
+                      </p>
+                    </div>
+
+                    <div>
+                      <Label>Аптайм</Label>
+                      <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                        {new Date(server!.created_at).toLocaleDateString('ru-RU')}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+}

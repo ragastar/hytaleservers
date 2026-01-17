@@ -1,28 +1,23 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTheme } from 'next-themes';
 import { ServerGrid } from "@/components/server/ServerGrid";
+import { SearchBar } from "@/components/shared/SearchBar";
 
-export default function Home() {
-  const { theme } = useTheme();
+export default function SimpleHome() {
   const [servers, setServers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     fetch('/api/servers')
       .then(res => res.json())
       .then(data => {
+        console.log('Серверы:', data);
         setServers(data.data || []);
         setLoading(false);
       })
       .catch(err => {
-        console.error('Error:', err);
+        console.error('Ошибка:', err);
         setLoading(false);
       });
   }, []);
@@ -34,16 +29,16 @@ export default function Home() {
       </div>
     );
   }
-
+  
   return (
     <div className="container mx-auto px-6 py-8">
-      <h1 className="mb-4 text-3xl font-bold text-foreground">
-        Топ серверов
-      </h1>
-      <p className="mb-8 text-muted-foreground">
-        Найдено {servers.length} серверов
-      </p>
-      <ServerGrid servers={servers} />
+        <h1 className="mb-4 text-3xl font-bold text-foreground">
+          Топ серверов
+        </h1>
+        <p className="mb-8 text-muted-foreground">
+          Найдено {servers.length} серверов
+        </p>
+        <ServerGrid servers={servers} />
     </div>
   );
 }
