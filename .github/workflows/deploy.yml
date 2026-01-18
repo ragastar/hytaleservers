@@ -28,7 +28,7 @@ jobs:
             git pull origin main
             pm2 stop hytaleservers || true
             rm -rf .next
-            npm install --production
+            npm install
             npm run build
             pm2 restart hytaleservers
           ENDSSH
