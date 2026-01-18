@@ -10,7 +10,7 @@ interface SettingHistory {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { key: string } }
+  context: { params: Promise<{ key: string }> }
 ) {
   try {
     const supabase = await createClient();
@@ -26,6 +26,8 @@ export async function GET(
         { status: 401 }
       );
     }
+
+    const params = await context.params;
 
     const { data: setting, error } = await supabase
       .from('site_settings')

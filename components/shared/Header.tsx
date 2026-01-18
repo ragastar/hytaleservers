@@ -6,11 +6,8 @@ import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/lib/store/authStore";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Flame } from "lucide-react";
-import { useSiteSettings } from '@/lib/hooks/useSiteSettings';
-import { Badge } from '@/components/ui/badge';
 
 export function Header() {
-  const { settings } = useSiteSettings();
   const { user, loading, initializeAuth, signOut } = useAuthStore();
 
   useEffect(() => {
@@ -34,11 +31,8 @@ export function Header() {
             </div>
             <div className="hidden md:flex items-center gap-2">
               <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-cyan-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-cyan-400">
-                {settings.site_name}
+                HytaleServers.tech
               </h1>
-              {settings.beta_mode && (
-                <Badge className="bg-yellow-500 text-white text-xs">Beta</Badge>
-              )}
               <Flame className="h-4 w-4 text-orange-500" />
             </div>
           </Link>

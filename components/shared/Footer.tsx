@@ -1,9 +1,6 @@
 import Link from "next/link";
-import { useSiteSettings } from '@/lib/hooks/useSiteSettings';
 
 export function Footer() {
-  const { settings } = useSiteSettings();
-
   return (
     <footer className="border-t border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
       <div className="container mx-auto px-6 py-8">
@@ -13,10 +10,10 @@ export function Footer() {
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-purple-500 to-cyan-500">
                 <span className="text-xl">🎮</span>
               </div>
-              <span className="font-semibold text-foreground">{settings.site_name}</span>
+              <span className="font-semibold text-foreground">HytaleServers.tech</span>
             </div>
             <p className="text-sm text-muted-foreground">
-              {settings.site_tagline}
+              Лучший мониторинг серверов Hytale на русском языке.
             </p>
           </div>
 
@@ -60,34 +57,30 @@ export function Footer() {
           <div>
             <h3 className="font-semibold text-foreground mb-3">Контакты</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              {settings.social_telegram && (
-                <li>
-                  <a
-                    href={settings.social_telegram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
-                  >
-                    Telegram
-                  </a>
-                </li>
-              )}
-              {settings.contact_email && (
-                <li>
-                  <a
-                    href={`mailto:${settings.contact_email}`}
-                    className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
-                  >
-                    {settings.contact_email}
-                  </a>
-                </li>
-              )}
+              <li>
+                <a
+                  href="https://t.me/hytaleservers"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+                >
+                  Telegram
+                </a>
+              </li>
+              <li>
+                <a
+                  href="mailto:support@hytaleservers.tech"
+                  className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+                >
+                  support@hytaleservers.tech
+                </a>
+              </li>
             </ul>
           </div>
         </div>
 
         <div className="mt-8 border-t border-zinc-200 pt-8 text-center text-sm text-zinc-600 dark:border-zinc-800 dark:text-zinc-400">
-          <p>&copy; {new Date().getFullYear()} {settings.site_name}. Все права защищены.</p>
+          <p>&copy; {new Date().getFullYear()} HytaleServers.tech. Все права защищены.</p>
         </div>
       </div>
     </footer>

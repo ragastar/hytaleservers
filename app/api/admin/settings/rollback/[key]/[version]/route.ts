@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { key: string; version: string } }
+  context: { params: Promise<{ key: string; version: string }> }
 ) {
   try {
     const supabase = await createClient();
@@ -20,6 +20,7 @@ export async function POST(
       );
     }
 
+    const params = await context.params;
     const targetVersion = parseInt(params.version);
 
     const { data: setting, error: fetchError } = await supabase
@@ -36,7 +37,7 @@ export async function POST(
     }
 
     const history = setting.history || [];
-    const targetVersionData = history.find(h => h.version === targetVersion);
+    const targetVersionData = history.find((h: any) => h.version === targetVersion);
 
     if (!targetVersionData) {
       return NextResponse.json(

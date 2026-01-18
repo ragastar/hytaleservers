@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { key: string } }
+  context: { params: Promise<{ key: string }> }
 ) {
   try {
     const { value } = await request.json();
@@ -28,6 +28,8 @@ export async function PUT(
         { status: 401 }
       );
     }
+
+    const params = await context.params;
 
     const { data: currentSetting, error: fetchError } = await supabase
       .from('site_settings')

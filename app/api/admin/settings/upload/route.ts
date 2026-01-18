@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { validateImageFile, validateImageDimensions, formatFileSize } from '@/lib/utils/image';
 
-interface SiteImageType extends 'home_banner' | 'site_logo' | 'site_favicon' | 'page_banner';
+type SiteImageType = 'home_banner' | 'site_logo' | 'site_favicon' | 'page_banner';
 
-const IMAGE_LIMITS: Record<SiteImageType, { maxSize: number; maxWidth: number; maxHeight: number; label: string }> = {
+const IMAGE_LIMITS: Record<string, { maxSize: number; maxWidth: number; maxHeight: number; label: string }> = {
   home_banner: { maxSize: 5 * 1024 * 1024, maxWidth: 1200, maxHeight: 400, label: 'Баннер главной страницы' },
   site_logo: { maxSize: 2 * 1024 * 1024, maxWidth: 512, maxHeight: 512, label: 'Логотип сайта' },
   site_favicon: { maxSize: 512 * 1024, maxWidth: 64, maxHeight: 64, label: 'Favicon' },
@@ -46,13 +46,6 @@ export async function POST(request: NextRequest) {
     }
 
     const limits = IMAGE_LIMITS[key];
-
-    if (!limits.allowedTypes?.includes(file.type)) {
-      return NextResponse.json(
-        { error: `Invalid file type. Allowed: PNG, JPG, WEBP, GIF` },
-        { status: 400 }
-      );
-    }
 
     if (file.size > limits.maxSize) {
       return NextResponse.json(
