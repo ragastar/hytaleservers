@@ -196,9 +196,11 @@ pm2 restart hytaleservers
 ## Important Files
 
 ### Documentation
+- `HISTORY.md` - **MANDATORY** - Project change history (iterations, decisions, problems) - UPDATE AFTER EVERY ITERATION
 - `LOCAL_SETUP.md` - Local setup instructions for AI assistant
 - `PROJECT_MAP.md` - Detailed project documentation (553 lines)
 - `README.md` - Main README with setup instructions
+
 
 ### Configuration
 - `package.json` - Dependencies and scripts
@@ -309,6 +311,65 @@ pm2 restart hytaleservers
 - Return JSON responses
 - Add error handling
 
+### Documentation Management
+
+**MANDATORY: Update HISTORY.md after every iteration**
+
+After completing development work (feature, bug fix, refactoring, etc.), you MUST update `HISTORY.md`:
+
+**When to update:**
+- After any iteration of development (not just git commits)
+- After debugging sessions
+- After architectural decisions
+- After testing and fixes
+
+**How to update:**
+1. Add new entry at the top of HISTORY.md with current date
+2. Include ALL relevant sections:
+   - 📝 Изменения кода - what was changed
+   - 💡 Принятые решения - why decisions were made
+   - 🐛 Проблемы и решения - issues encountered and fixed
+   - ✅ Задачи (TODO) - completed and pending tasks with tags [bug]/[feature]/[refactor] and priority high/medium/low
+   - 🔧 Технические заметки - important technical details
+   - 🎯 Результат - outcome of the iteration
+
+**Format:**
+```markdown
+## [ГГГГ-ММ-ДД] - Итерация N
+
+### 📝 Изменения кода
+- [Description]
+
+### 💡 Принятые решения
+- **[Decision]**: [Description]
+  - Почему: [Reason]
+  - Альтернативы: [Alternatives]
+
+### 🐛 Проблемы и решения
+- **[Problem]**: [Description]
+  - Решение: [How fixed]
+  - Время: [Time spent]
+
+### ✅ Задачи (TODO)
+- [x] [Task] - [tag] [priority]
+- [ ] [Task] - [tag] [priority]
+
+### 🔧 Технические заметки
+- [Technical details]
+
+### 🎯 Результат
+[Outcome summary]
+```
+
+**CRITICAL RULES:**
+- ALWAYS update HISTORY.md before moving to next task
+- Include ALL changes, even minor ones
+- Tag tasks with [bug]/[feature]/[refactor]
+- Mark task priority as high/medium/low
+- Document both successes and failures
+- Keep entries machine-readable (AI needs to parse them)
+
+
 ## Testing Checklist
 
 ### Before Pushing
@@ -317,6 +378,8 @@ pm2 restart hytaleservers
 - [ ] Test API endpoints
 - [ ] Check console for errors
 - [ ] Verify Supabase connection
+- [ ] **CRITICAL: Update HISTORY.md** with all changes, decisions, and problems
+
 
 ### After Deployment
 - [ ] Check PM2 status: `pm2 status`

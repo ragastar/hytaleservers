@@ -255,6 +255,7 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3003
 
 ## Documentation
 
+- **HISTORY.md** - Хронология изменений проекта (история итераций, решения, проблемы)
 - **PROJECT_MAP.md** - Детальная документация проекта (553 строки)
 - **LOCAL_SETUP.md** - Инструкции по локальной настройке для AI
 - **.opencode/skills/hytaleservers-workflow/SKILL.md** - Проектный скилл
