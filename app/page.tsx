@@ -3,9 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { ServerGrid } from "@/components/server/ServerGrid";
+import { useSiteSettings } from '@/lib/hooks/useSiteSettings';
 
 export default function Home() {
   const { theme } = useTheme();
+  const { settings } = useSiteSettings();
   const [servers, setServers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
@@ -37,16 +39,18 @@ export default function Home() {
 
   return (
     <div className="container mx-auto px-6 py-8">
-      <div className="mb-8 max-w-4xl mx-auto">
-        <img
-          src="https://images.unsplash.com/photo-1552820728-8b83bb6b773f?w=1200&h=400&fit=crop"
-          alt="Gaming Banner"
-          className="w-full h-48 object-cover rounded-xl shadow-lg hover:shadow-xl transition-shadow"
-          onError={(e) => {
-            e.currentTarget.src = 'https://placehold.co/1200x400/6366f1/white?text=Hytale+Servers';
-          }}
-        />
-      </div>
+      {settings.home_banner_enabled && settings.home_banner_url && (
+        <div className="mb-8 max-w-4xl mx-auto">
+          <img
+            src={settings.home_banner_url}
+            alt="Hytale Banner"
+            className="w-full h-48 object-cover rounded-xl shadow-lg hover:shadow-xl transition-shadow"
+            onError={(e) => {
+              e.currentTarget.src = 'https://placehold.co/1200x400/6366f1/white?text=Hytale+Servers';
+            }}
+          />
+        </div>
+      )}
 
       <h1 className="mb-4 text-3xl font-bold text-foreground">
         Топ серверов
