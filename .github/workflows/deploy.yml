@@ -26,7 +26,9 @@ jobs:
           ssh -i ~/.ssh/id_rsa ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'ENDSSH'
             cd ${{ secrets.VPS_PATH }}
             git pull origin main
-            npm install --production
+            pm2 stop hytaleservers || true
+            rm -rf .next
+            npm install
             npm run build
             pm2 restart hytaleservers
           ENDSSH
