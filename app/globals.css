@@ -74,3 +74,100 @@ html:not(.dark) body {
 html.dark body {
   background: hsl(var(--background));
 }
+
+/* Fire and Water Footer Animations */
+@keyframes fireGlow {
+  0%, 100% {
+    opacity: 0.6;
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: translateY(-8px) scale(1.05);
+  }
+}
+
+@keyframes fireFlicker {
+  0%, 100% {
+    filter: blur(20px) brightness(1);
+  }
+  25% {
+    filter: blur(25px) brightness(1.2);
+  }
+  50% {
+    filter: blur(18px) brightness(0.9);
+  }
+  75% {
+    filter: blur(22px) brightness(1.1);
+  }
+}
+
+@keyframes waterFlow {
+  0%, 100% {
+    opacity: 0.5;
+    transform: translateX(0) scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateX(10px) scale(1.03);
+  }
+}
+
+@keyframes waterWave {
+  0%, 100% {
+    filter: blur(25px) brightness(1);
+  }
+  50% {
+    filter: blur(30px) brightness(1.1);
+  }
+}
+
+@keyframes embers {
+  0%, 100% {
+    opacity: 0;
+    transform: translateY(0) scale(0.5);
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-60px) scale(0);
+  }
+}
+
+@keyframes bubbles {
+  0%, 100% {
+    opacity: 0;
+    transform: translateY(0) scale(0.5);
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-40px) scale(0.3);
+  }
+}
+
+.footer-fire-glow {
+  animation: fireGlow 3s ease-in-out infinite, fireFlicker 2s ease-in-out infinite;
+}
+
+.footer-water-glow {
+  animation: waterFlow 4s ease-in-out infinite, waterWave 3s ease-in-out infinite;
+}
+
+.footer-ember {
+  animation: embers 2s ease-out infinite;
+}
+
+.footer-bubble {
+  animation: bubbles 3s ease-out infinite;
+}
