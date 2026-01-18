@@ -5,6 +5,10 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/lib/store/authStore";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { HeaderSearch } from "@/components/shared/HeaderSearch";
+import { FavoritesDropdown } from "@/components/shared/FavoritesDropdown";
+import { MessagesDropdown } from "@/components/shared/MessagesDropdown";
+import { UserStatusIndicator } from "@/components/shared/UserStatusIndicator";
 import {
   Flame,
   Menu,
@@ -76,9 +80,9 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-zinc-200 bg-white/80 backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-900/80">
       <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-4">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 sm:gap-3">
+          <Link href="/" className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
             <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-lg bg-gradient-to-br from-purple-500 to-cyan-500">
               <span className="text-lg sm:text-xl">🎮</span>
             </div>
