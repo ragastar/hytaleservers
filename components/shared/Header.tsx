@@ -33,7 +33,7 @@ export function Header() {
               <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-cyan-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-cyan-400">
                 HytaleServers.tech
               </h1>
-              <Flame className="h-4 w-4 text-orange-500" />
+              <Flame className="h-4 w-4 text-orange-500 transition-transform hover:scale-125 hover:animate-pulse cursor-pointer" />
             </div>
           </Link>
 
