@@ -39,6 +39,9 @@ export function Header() {
             <Link href="/">
               <Button variant="ghost">Серверы</Button>
             </Link>
+            <Link href="/about">
+              <Button variant="ghost">О проекте</Button>
+            </Link>
             
             <ThemeToggle />
             
