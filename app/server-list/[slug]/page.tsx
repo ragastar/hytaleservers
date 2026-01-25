@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Users, Clock, ThumbsUp, ExternalLink, MessageCircle, Star, Copy, Check, Server, Shield, Calendar } from 'lucide-react';
+import { VoteButton } from '@/components/server/VoteButton';
+import { useVotesStore } from '@/lib/store/votesStore';
 
 interface Category {
   id: string;
@@ -236,9 +238,14 @@ export default function ServerDetailPage() {
                   </Button>
                 )}
 
-                <Button className="w-full justify-start">
+                 <Button className="w-full justify-start">
                   <ThumbsUp className="mr-2 h-5 w-5" />
-                  Голосовать за сервер
+                  {server.id && (
+                    <VoteButton 
+                      serverId={server.id}
+                      voteCount={server.total_votes || 0}
+                    />
+                  )}
                 </Button>
               </div>
             </CardContent>
@@ -272,6 +279,24 @@ export default function ServerDetailPage() {
                 <Badge variant={isOnline ? 'default' : 'destructive'}>
                   {isOnline ? 'Онлайн' : 'Оффлайн'}
                 </Badge>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Голосование</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between rounded-lg bg-muted p-4">
+                <span className="text-sm text-muted-foreground">Общее голосов</span>
+                <span className="text-xl font-bold text-foreground">
+                  {server.total_votes || 0}
+                </span>
+              </div>
+
+              <div className="text-sm text-muted-foreground">
+                Голосуйте за этот сервер, чтобы поднять его в топе!
               </div>
             </CardContent>
           </Card>

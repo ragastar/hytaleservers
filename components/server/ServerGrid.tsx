@@ -61,6 +61,7 @@ export function ServerGrid({ servers }: ServerGridProps) {
           rating={server.rating || 0}
           totalVotes={server.total_votes || 0}
           status={(server.current_players && server.current_players > 0) ? 'online' : 'offline'}
+          serverId={server.id}
         />
       ))}
     </div>

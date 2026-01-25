@@ -5,6 +5,8 @@ import { Star, Copy, Check } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 import { ServerStatus } from "./ServerStatus";
+import { VoteButton } from "./VoteButton";
+import { useVotesStore } from "@/lib/store/votesStore";
 
 interface ServerCardProps {
   name: string;
@@ -23,6 +25,7 @@ interface ServerCardProps {
   rating?: number;
   totalVotes?: number;
   status?: 'online' | 'offline';
+  serverId?: string;
 }
 
 function PlaceholderBanner() {
@@ -102,7 +105,8 @@ export function ServerCard({
   bannerUrl,
   categories = [],
   rating = 0,
-  totalVotes = 0
+  totalVotes = 0,
+  serverId = ''
 }: ServerCardProps) {
   return (
     <Link href={`/server-list/${slug}`}>
@@ -154,9 +158,16 @@ export function ServerCard({
                 {description}
               </p>
 
-              <RatingDisplay rating={rating} votes={totalVotes} />
+              {serverId && (
+                <div className="flex items-center justify-between gap-2 mt-2">
+                  <VoteButton 
+                    serverId={serverId}
+                    voteCount={totalVotes || 0}
+                  />
+                  <RatingDisplay rating={rating || 0} votes={totalVotes || 0} />
+                </div>
+              )}
             </div>
-
           </div>
         </CardContent>
       </Card>

@@ -1,0 +1,15 @@
+# Попробуем авторизоваться через Supabase OAuth
+# Endpoint: https://supabase.com/auth/v1/token?grant_type=password
+
+# Или через OAuth flow:
+# 1. GET для авторизации в браузере
+# https://supabase.com/auth/v1/authorize?provider=github&redirect_to=http://localhost:3000/callback
+
+# 2. POST для обмена кода на токен
+# POST https://supabase.com/auth/v1/token
+# Body: {"grant_type":"authorization_code","code":"<code>","redirect_uri":"http://localhost:3000/callback"}
+
+# Или попробовать напрямую через MCP auth endpoint:
+# POST https://mcp.supabase.com/api/auth/token
+
+# Давайте попробуем последний вариант

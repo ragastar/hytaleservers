@@ -216,7 +216,7 @@ export async function GET(request: NextRequest) {
       slug: server.slug,
       ip: server.ip,
       port: server.port,
-      online_players: server.current_players || 0,
+      online_players: server.current_players || server.online_players || 0,
       max_players: server.max_players || 100,
       short_description: server.short_description,
       full_description: server.full_description,
@@ -233,7 +233,8 @@ export async function GET(request: NextRequest) {
       total_votes: server.total_votes,
       rating: server.rating,
       uptime_percentage: server.uptime_percentage,
-      created_at: server.created_at
+      created_at: server.created_at,
+      current_players: server.current_players || server.online_players || 0,
     })) || [];
 
     const totalPages = Math.ceil((count || 0) / limit);
