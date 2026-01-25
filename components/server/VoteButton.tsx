@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react';
 import { ThumbsUp, Check, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useVotesStore } from '@/lib/store/votesStore';
-import { useAuthStore } from '@/lib/store/authStore';
+import { createClient } from '@/lib/supabase/client';
 
 interface VoteButtonProps {
   serverId: string;
@@ -14,21 +13,41 @@ interface VoteButtonProps {
 }
 
 export function VoteButton({ serverId, voteCount, hasVotedToday, onVote }: VoteButtonProps) {
-  const { voteForServer } = useVotesStore();
-  const { user } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
   const [hasVotedTodayLocal, setHasVotedToday] = useState(false);
+  const [currentVoteCount, setCurrentVoteCount] = useState(voteCount);
   
   useEffect(() => {
-    const checkStatus = async () => {
-      const status = await useVotesStore.getState().checkVoteStatus(serverId);
-      setHasVotedToday(status.hasVotedToday);
+    const checkVoteStatus = async () => {
+      const supabase = await createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        setHasVotedToday(false);
+        return;
+      }
+      
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      const { data: existingVote } = await supabase
+        .from('votes')
+        .select('voted_at')
+        .eq('server_id', serverId)
+        .eq('user_id', user.id)
+        .gte('voted_at', today.toISOString())
+        .maybeSingle();
+      
+      setHasVotedToday(!!existingVote);
     };
     
-    checkStatus();
+    checkVoteStatus();
   }, [serverId]);
   
   const handleVote = async () => {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
     if (!user) {
       alert('Пожалуйста, войдите в систему, чтобы голосовать');
       return;
@@ -39,17 +58,39 @@ export function VoteButton({ serverId, voteCount, hasVotedToday, onVote }: VoteB
     }
     
     setIsLoading(true);
-    const result = await voteForServer(serverId);
-    setIsLoading(false);
     
-    if (result?.success) {
-      setHasVotedToday(true);
-    } else {
-      alert(result?.message || 'Ошибка при голосовании');
-    }
-    
-    if (onVote) {
-      onVote();
+    try {
+      const response = await fetch('/api/votes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          server_id: serverId,
+        }),
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Ошибка при голосовании');
+      }
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        setHasVotedToday(true);
+        setCurrentVoteCount(result.voteCount || currentVoteCount + 1);
+        
+        if (onVote) {
+          onVote();
+        }
+      } else {
+        alert(result.message || 'Ошибка при голосовании');
+      }
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Ошибка при голосовании');
+    } finally {
+      setIsLoading(false);
     }
   };
   
@@ -66,12 +107,12 @@ export function VoteButton({ serverId, voteCount, hasVotedToday, onVote }: VoteB
       ) : hasVotedTodayLocal ? (
         <>
           <Check className="h-4 w-4 text-green-500" />
-          <span className="text-green-600 dark:text-green-400">{voteCount}</span>
+          <span className="text-green-600 dark:text-green-400">{currentVoteCount}</span>
         </>
       ) : (
         <>
           <ThumbsUp className="h-4 w-4" />
-          {voteCount}
+          {currentVoteCount}
         </>
       )}
     </Button>
