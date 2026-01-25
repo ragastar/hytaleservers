@@ -10,9 +10,18 @@ interface Server {
   max_players: number;
   short_description: string;
   logo_url?: string;
-  categories?: string[];
+  banner_url?: string;
+  website_url?: string;
+  discord_url?: string;
+  categories?: {
+    slug: string;
+    name: string;
+    icon: string;
+  }[];
   status: string;
   current_players?: number;
+  rating?: number;
+  total_votes?: number;
 }
 
 interface ServerGridProps {
@@ -47,8 +56,10 @@ export function ServerGrid({ servers }: ServerGridProps) {
           onlinePlayers={server.current_players || server.online_players || 0}
           maxPlayers={server.max_players || 100}
           description={server.short_description}
-          logoUrl={server.logo_url}
-          categories={server.categories}
+          bannerUrl={server.banner_url}
+          categories={server.categories || []}
+          rating={server.rating || 0}
+          totalVotes={server.total_votes || 0}
           status={(server.current_players && server.current_players > 0) ? 'online' : 'offline'}
         />
       ))}

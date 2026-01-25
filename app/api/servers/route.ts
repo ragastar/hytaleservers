@@ -224,7 +224,11 @@ export async function GET(request: NextRequest) {
       banner_url: server.banner_url,
       website_url: server.website_url,
       discord_url: server.discord_url,
-      categories: server.categories?.map((c: any) => c.slug),
+      categories: server.categories?.map((c: any) => ({
+        slug: c.slug,
+        name: c.name,
+        icon: c.icon
+      })),
       status: server.status,
       total_votes: server.total_votes,
       rating: server.rating,
